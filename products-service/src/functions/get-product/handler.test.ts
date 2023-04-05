@@ -1,5 +1,3 @@
-
-
 import { getProduct } from "./handler";
 
 import productsService from "@services/index";
@@ -7,7 +5,7 @@ import { Product } from "@models/product";
 
 
 describe('Get product by id', () => {
-    const mockedProduct: Product = { id: 1, name: 'test', price: 1000};
+    const mockedProduct: Product = { id: 1, title: 'test', price: 1000};
     const event = {
         httpMethod: 'get',
         headers: {

@@ -5,7 +5,7 @@ import { Product } from "@models/product";
 
 
 describe('Get all products', () => {
-    const mockedProducts: Product[] = [{ id: 1, name: 'test', price: 1000}];
+    const mockedProducts: Product[] = [{ id: 1, title: 'test', price: 1000}];
 
     it('should return 200', async () => {
         const spy = jest.spyOn(productsService, 'getAll').mockReturnValueOnce(Promise.resolve(mockedProducts));
