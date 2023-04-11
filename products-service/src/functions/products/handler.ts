@@ -4,7 +4,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import productsService from '@services/index';
 
 
-export const getAllProducts = middyfy(async (): Promise<APIGatewayProxyResult> => {
+export const getProductsList = middyfy(async (): Promise<APIGatewayProxyResult> => {
   const products = await productsService.getAll();
 
   return formatJSONResponse(products);
