@@ -1,4 +1,4 @@
 export interface Stock {
-    productId: number;
+    product_id: string;
     count: number;
 }

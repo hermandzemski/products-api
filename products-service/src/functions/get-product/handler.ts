@@ -4,8 +4,10 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import productsService from "@services/index";
 
 export const getProduct = middyfy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    console.log('get product:', event.pathParameters.id);
+
     try {
-      const id = Number(event.pathParameters.id);
+      const id = event.pathParameters.id;
 
       const product = await productsService.getById(id);
   
@@ -16,11 +18,7 @@ export const getProduct = middyfy(async (event: APIGatewayProxyEvent): Promise<A
       }
 
       return formatJSONResponse(product);
-    } catch (e) {
-      return formatJSONResponse({
-        message: e
-      }, 500);
+    } catch (err) {
+      return formatJSONResponse(err, 500);
     }
-  
-  
-  });
+});
