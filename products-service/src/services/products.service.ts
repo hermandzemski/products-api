@@ -1,23 +1,19 @@
 import { Product } from "@models/product";
+import { ProductsDB } from "@data-providers/produsts.db";
+import Ajv from "ajv";
 
-const products: Product[] = [{
-    id: 1,
-    title: 'IPhone 13',
-    price: 1400
-}, {
-    id: 2,
-    title: 'IPhone 14',
-    price: 1600
-}];
+const ajv = new Ajv();
 
 export default class ProductsService {
     async getAll(): Promise<Product[]> {
-        return Promise.resolve(products);
+        return ProductsDB.getAll();
     }
 
-    async getById(id: number): Promise<Product> {
-        const product = products.find(pr => pr.id === id);
+    async getById(id: string): Promise<Product> {
+        return ProductsDB.getById(id);
+    }
 
-        return Promise.resolve(product);
+    async create(product: Omit<Product, 'id'>): Promise<any> {        
+        return ProductsDB.add(product);
     }
 }
