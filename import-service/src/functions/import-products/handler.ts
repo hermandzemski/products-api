@@ -21,8 +21,10 @@ export const importProductsFile = middyfy(async (event: APIGatewayEvent): Promis
 
   console.log('File name:', fileName);
 
-  const client = new S3Client({ region: REGION, credentials: { accessKeyId: "ASIAWN67CFFCCLE5UOGD", secretAccessKey: "7GZ3WXxRUT6Y7NO/0yEYqXDVNP8e44LW5G1Nudpg" } });
-  const command = new PutObjectCommand({ Bucket: BUCKET, Key: `uploaded/${fileName}`, ContentType: 'text/csv' });
+  //const client = new S3Client({ region: REGION, credentials: { accessKeyId: "ASIAWN67CFFCCLE5UOGD", secretAccessKey: "7GZ3WXxRUT6Y7NO/0yEYqXDVNP8e44LW5G1Nudpg" } });
+  const client = new S3Client({ region: REGION });
+
+  const command = new PutObjectCommand({ Bucket: BUCKET, Key: `uploaded/${fileName}` });
   const signedUrl =  await getSignedUrl(client, command, { expiresIn: 3600 });
 
 
