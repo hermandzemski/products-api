@@ -52,6 +52,7 @@ export const importFileParser = async (event: any): Promise<APIGatewayProxyResul
   });
 
 
+  console.log('finished');
   return formatJSONResponse({});
 };
 
