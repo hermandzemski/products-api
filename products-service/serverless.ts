@@ -40,6 +40,13 @@ const serverlessConfiguration: AWS = {
               'dynamodb:PutItem'
             ],
             Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.STOCK_DB_NAME}"
+          },
+          {
+            Effect: 'Allow',
+            Action: ['sqs:*'],
+            Resource: {
+              'Fn::GetAtt': [ 'CatalogItemsQueue', 'Arn' ]
+            }
           }
         ]
       }
@@ -71,6 +78,28 @@ const serverlessConfiguration: AWS = {
       stages: [ 'dev' ]
     }
   },
+  resources: {
+    Resources: {
+      CatalogItemsQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'CatalogItemsQueue',
+          FifoQueue: false
+        }
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS:Topic',
+        Properties: {
+          TopicName: 'createProductTopic',
+          DisplayName: 'Create product',
+          Subscription: [{
+            Endpoint: 'demsky.h.d@gmail.com',
+            Protocol: 'email'
+          }]
+        }
+      }
+    }
+  }
   // resources: {
   //   Resources: {
   //     ProductsTable: {
