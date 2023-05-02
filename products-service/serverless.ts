@@ -1,6 +1,6 @@
 import type { AWS } from '@serverless/typescript';
 
-import { getProductsList, getProductsById, createProduct } from '@functions/index';
+import { getProductsList, getProductsById, createProduct, catalogBatchProcess } from '@functions/index';
 
 const serverlessConfiguration: AWS = {
   service: 'products-service',
@@ -19,6 +19,7 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       PRODUCTS_DB_NAME: 'Products',
       STOCK_DB_NAME: 'Stocks',
+      SNS_ARN: { Ref: 'SNSTopic' }
     },
     iam: {
       role: {
@@ -53,7 +54,7 @@ const serverlessConfiguration: AWS = {
     }
   },
   // import the function via paths
-  functions: { getProductsList, getProductsById, createProduct  },
+  functions: { getProductsList, getProductsById, createProduct, catalogBatchProcess },
   package: { individually: true },
   custom: {
     esbuild: {
@@ -83,12 +84,11 @@ const serverlessConfiguration: AWS = {
       CatalogItemsQueue: {
         Type: 'AWS::SQS::Queue',
         Properties: {
-          QueueName: 'CatalogItemsQueue',
-          FifoQueue: false
+          QueueName: 'CatalogItemsQueue'
         }
       },
       SNSTopic: {
-        Type: 'AWS::SNS:Topic',
+        Type: 'AWS::SNS::Topic',
         Properties: {
           TopicName: 'createProductTopic',
           DisplayName: 'Create product',

@@ -3,7 +3,7 @@ import { formatJSONResponse } from '@libs/api-gateway';
 import { APIGatewayProxyResult } from "aws-lambda";
 
 import { CopyObjectCommand, DeleteObjectCommand, GetObjectCommand, S3Client, S3 } from "@aws-sdk/client-s3";
-import { BUCKET, REGION } from 'src/const';
+import { BUCKET, QUEUE_URL, REGION } from 'src/const';
 import * as csv from 'csv-parser';
 import { Readable } from 'stream';
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
@@ -40,7 +40,7 @@ export const importFileParser = async (event: any): Promise<APIGatewayProxyResul
         const params = {
           DelaySeconds: 10,
           MessageBody: row,
-          QueueUrl: "https://sqs.us-east-1.amazonaws.com/672607396920/lambda-sqs-demo-queue"
+          QueueUrl: QUEUE_URL
         };
 
         sqsClient.send(new SendMessageCommand(params))

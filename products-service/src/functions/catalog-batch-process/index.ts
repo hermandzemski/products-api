@@ -1,6 +1,6 @@
 import { handlerPath } from "@libs/handler-resolver";
 
-export const getProductsById = {
+export const catalogBatchProcess = {
     handler: `${handlerPath(__dirname)}/handler.catalogBatchProcess`,
     events: [
         {
