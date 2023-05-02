@@ -4,13 +4,11 @@ import { APIGatewayProxyResult } from "aws-lambda";
 
 import { CopyObjectCommand, DeleteObjectCommand, GetObjectCommand, S3Client, S3 } from "@aws-sdk/client-s3";
 import { BUCKET, QUEUE_URL, REGION } from 'src/const';
-import * as csv from 'csv-parser';
+const csv = require('csv-parser')
 import { Readable } from 'stream';
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 
 const sqsClient = new SQSClient({ region: REGION });
-
-
 
 export const importFileParser = async (event: any): Promise<APIGatewayProxyResult> => {
   const fileName = event.Records[0].s3.object.key;
