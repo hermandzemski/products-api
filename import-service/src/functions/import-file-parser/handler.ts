@@ -6,6 +6,9 @@ import { CopyObjectCommand, DeleteObjectCommand, GetObjectCommand, S3Client, S3 
 import { BUCKET, REGION } from 'src/const';
 import * as csv from 'csv-parser';
 import { Readable } from 'stream';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
+
+const sqsClient = new SQSClient({ region: REGION });
 
 
 
@@ -31,6 +34,23 @@ export const importFileParser = async (event: any): Promise<APIGatewayProxyResul
     console.log('file parsed');
     console.log(results);
 
+    try {
+
+      results.forEach(row => {
+        const params = {
+          DelaySeconds: 10,
+          MessageBody: row,
+          QueueUrl: "https://sqs.us-east-1.amazonaws.com/672607396920/lambda-sqs-demo-queue"
+        };
+
+        sqsClient.send(new SendMessageCommand(params))
+      });
+    } catch (err) {
+      console.log(err);
+    }
+
+
+
     const copyCommand = new CopyObjectCommand({
       Bucket: BUCKET,
       CopySource: `${BUCKET}/${fileName}`,
@@ -55,6 +75,10 @@ export const importFileParser = async (event: any): Promise<APIGatewayProxyResul
   console.log('finished');
   return formatJSONResponse({});
 };
+
+async function fileParsedHandler() {
+
+}
 
 // async function getObject(params) {
 //   const s3ResponseStream = (await s3.getObject(params)).Body
