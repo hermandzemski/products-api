@@ -44,9 +44,9 @@ const serverlessConfiguration: AWS = {
           },
           {
             Effect: 'Allow',
-            Action: ['sqs:*'],
+            Action: ['sns:*'],
             Resource: {
-              'Fn::GetAtt': [ 'CatalogItemsQueue', 'Arn' ]
+              Ref: 'SNSTopic'
             }
           }
         ]
@@ -92,10 +92,34 @@ const serverlessConfiguration: AWS = {
         Properties: {
           TopicName: 'createProductTopic',
           DisplayName: 'Create product',
-          Subscription: [{
-            Endpoint: 'demsky.h.d@gmail.com',
-            Protocol: 'email'
-          }]
+          // Subscription: [{
+          //   Endpoint: 'demsky.h.d@gmail.com',
+          //   Protocol: 'email'
+          // }]
+        }
+      },
+      SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'demsky.h.d@gmail.com',
+          Protocol: 'email',
+          FilterPolicyScope: 'MessageAttributes',
+          FilterPolicy: {
+            price: [{"numeric": [">=", 1000]}]
+          },
+          TopicArn: { Ref: "SNSTopic" }
+        }
+      },
+      SNSLowPriceSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'herman_dzemski@epam.com',
+          Protocol: 'email',
+          FilterPolicyScope: 'MessageAttributes',
+          FilterPolicy: {
+            price: [{"numeric": ["<", 1000]}]
+          },
+          TopicArn: { Ref: "SNSTopic" }
         }
       }
     }

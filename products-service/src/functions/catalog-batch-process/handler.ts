@@ -12,35 +12,48 @@ export const catalogBatchProcess = async (event: SQSEvent): Promise<APIGatewayPr
     console.log('sqs event:', event);
 
     try {
-      //const id = event.pathParameters.id;
 
-      //const product = await productsService.getById(id);
+        for (let record of event.Records) {
 
-      event.Records.forEach(async record => {
-        console.log('sqs record:', record)
-        const { title, description, price, count } = JSON.parse(record.body);
+    //   event.Records.forEach(async record => {
+            console.log('sqs record:', record);
+            console.log('sqs record body:', record.body);
+            const { title, description, price, count } = JSON.parse(record.body);
 
-        if (!title || !price || !count) {
-            return formatJSONResponse({ message: 'missing required parameters'}, 400);
-         }
+            if (!title || !price || !count) {
+                return formatJSONResponse({ message: 'missing required parameters'}, 400);
+            }
 
-        
+            
 
-        await productsService.create({
-            title, description, price, count
-        });
+            await productsService.create({
+                title, description, price: Number(price), count: Number(count)
+            });
 
-        const params: PublishCommandInput = {
-            Message: `Product ${title} has been processed`,
-            Subject: 'Added new product',
-            TopicArn: TOPIC_ARN
+            const params: PublishCommandInput = {
+                Message: `Product ${title} has been processed`,
+                Subject: 'Added new product',
+                TopicArn: TOPIC_ARN,
+                MessageAttributes: {
+                    price: {
+                        DataType: 'Number',
+                        StringValue: price
+                    }
+                }
+            }
+
+            console.log(params);
+            await snsClient.send(new PublishCommand(params))
+                .then(() => {
+                    console.log('sns published');
+                }).catch((err) => {
+                    console.error('sns failed:', err);
+                });
         }
-
-        snsClient.send(new PublishCommand(params));
-      });
 
       return formatJSONResponse('');
     } catch (err) {
+        console.error(err);
       return formatJSONResponse(err, 500);
     }
 };
