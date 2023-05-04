@@ -1,6 +1,6 @@
 import type { AWS } from '@serverless/typescript';
 
-import { getProductsList, getProductsById, createProduct } from '@functions/index';
+import { getProductsList, getProductsById, createProduct, catalogBatchProcess } from '@functions/index';
 
 const serverlessConfiguration: AWS = {
   service: 'products-service',
@@ -19,6 +19,7 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       PRODUCTS_DB_NAME: 'Products',
       STOCK_DB_NAME: 'Stocks',
+      SNS_ARN: { Ref: 'SNSTopic' }
     },
     iam: {
       role: {
@@ -40,13 +41,20 @@ const serverlessConfiguration: AWS = {
               'dynamodb:PutItem'
             ],
             Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.STOCK_DB_NAME}"
+          },
+          {
+            Effect: 'Allow',
+            Action: ['sns:*'],
+            Resource: {
+              Ref: 'SNSTopic'
+            }
           }
         ]
       }
     }
   },
   // import the function via paths
-  functions: { getProductsList, getProductsById, createProduct  },
+  functions: { getProductsList, getProductsById, createProduct, catalogBatchProcess },
   package: { individually: true },
   custom: {
     esbuild: {
@@ -71,6 +79,51 @@ const serverlessConfiguration: AWS = {
       stages: [ 'dev' ]
     }
   },
+  resources: {
+    Resources: {
+      CatalogItemsQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'CatalogItemsQueue'
+        }
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'createProductTopic',
+          DisplayName: 'Create product',
+          // Subscription: [{
+          //   Endpoint: 'demsky.h.d@gmail.com',
+          //   Protocol: 'email'
+          // }]
+        }
+      },
+      SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'demsky.h.d@gmail.com',
+          Protocol: 'email',
+          FilterPolicyScope: 'MessageAttributes',
+          FilterPolicy: {
+            price: [{"numeric": [">=", 1000]}]
+          },
+          TopicArn: { Ref: "SNSTopic" }
+        }
+      },
+      SNSLowPriceSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'herman_dzemski@epam.com',
+          Protocol: 'email',
+          FilterPolicyScope: 'MessageAttributes',
+          FilterPolicy: {
+            price: [{"numeric": ["<", 1000]}]
+          },
+          TopicArn: { Ref: "SNSTopic" }
+        }
+      }
+    }
+  }
   // resources: {
   //   Resources: {
   //     ProductsTable: {

@@ -17,7 +17,8 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
-      BUCKET_NAME: 'products-csv-parser'
+      BUCKET_NAME: 'products-csv-parser',
+      QUEUE_URL: 'https://sqs.us-east-1.amazonaws.com/442312567108/CatalogItemsQueue'
     },
     httpApi: { cors: true },
     iam: {
@@ -33,6 +34,11 @@ const serverlessConfiguration: AWS = {
             Action: 's3:*',
             Resource: "arn:aws:s3:::${self:provider.environment.BUCKET_NAME}/*"
           },
+          {
+            Effect: 'Allow',
+            Action: ['sqs:*'],
+            Resource: "arn:aws:sqs:us-east-1:442312567108:CatalogItemsQueue"
+          }
         ]
       }
     }
