@@ -1,7 +1,6 @@
 import { APIGatewayRequestAuthorizerEvent, AuthResponse } from "aws-lambda";
 import * as crypto from 'crypto';
 
-
 export const basicAuthorizer = (event: APIGatewayRequestAuthorizerEvent, context, callback) => {
     console.log(event);
 
@@ -14,7 +13,6 @@ export const basicAuthorizer = (event: APIGatewayRequestAuthorizerEvent, context
     try {
 
         const encodedCreds = authHeader.split(" ")[1];
-
         const [username, password] = Buffer.from(encodedCreds, "base64").toString().split(':');
 
         const savedPassword = process.env[username];
@@ -27,12 +25,11 @@ export const basicAuthorizer = (event: APIGatewayRequestAuthorizerEvent, context
         callback(null, getAuthResponse(event, 'Deny'));
     }
 
-
     callback(null, getAuthResponse(event, 'Allow')); 
 }
 
 const getAuthResponse = (event: APIGatewayRequestAuthorizerEvent, effect: 'Allow' | 'Deny'): AuthResponse => {
-    const obj =  {
+    return  {
         principalId: crypto.randomUUID(),
         policyDocument: {
             Version: '2012-10-17',
@@ -43,8 +40,4 @@ const getAuthResponse = (event: APIGatewayRequestAuthorizerEvent, effect: 'Allow
             }]
         }
     };
-
-    console.log('auth response:', obj);
-
-    return obj;
 }
