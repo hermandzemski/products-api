@@ -1,7 +1,6 @@
 import type { AWS } from '@serverless/typescript';
 
-import { importProductsFile } from '@functions/index';
-import { importFileParser } from '@functions/import-file-parser';
+import { importProductsFile, importFileParser } from '@functions/index';
 
 const serverlessConfiguration: AWS = {
   service: 'import-service',
@@ -20,7 +19,9 @@ const serverlessConfiguration: AWS = {
       BUCKET_NAME: 'products-csv-parser',
       QUEUE_URL: 'https://sqs.us-east-1.amazonaws.com/442312567108/CatalogItemsQueue'
     },
-    httpApi: { cors: true },
+    httpApi: { 
+      cors: true
+    },
     iam: {
       role: {
         statements: [
@@ -57,7 +58,7 @@ const serverlessConfiguration: AWS = {
       platform: 'node',
       concurrency: 10,
     },
-  },
+  }
 };
 
 module.exports = serverlessConfiguration;
