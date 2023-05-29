@@ -9,9 +9,11 @@ export const importProductsFile: AWS['functions'][0] = {
       http: {
         method: 'get',
         path: 'import/{name}',
+        cors: true,
         authorizer: {
           type: 'request',
           arn: 'arn:aws:lambda:us-east-1:442312567108:function:authorization-service-dev-basicAuthorizer',
+
         },
       },
     },
