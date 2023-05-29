@@ -13,7 +13,7 @@ import { CartEntity } from "./entities/cart.entity";
         username: process.env.DATABASE_USERNAME,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
-        entities: ['dist/database/entities/*.entity{.ts,.js}'],
+        entities: [CartEntity, CartItem],
        //  synchronize: true,
         /**
          * Flag to show all generated sql queries on each interaction with DB.

@@ -19,14 +19,8 @@ const serverlessConfiguration: AWS = {
       BUCKET_NAME: 'products-csv-parser',
       QUEUE_URL: 'https://sqs.us-east-1.amazonaws.com/442312567108/CatalogItemsQueue'
     },
-    httpApi: { 
-      
-      cors: {
-        allowedOrigins: ['*'],
-        allowedHeaders: ['*'],
-        allowedMethods: ['*']
-      },
-      
+    httpApi: {
+      cors: true
     },
     iam: {
       role: {
