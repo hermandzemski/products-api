@@ -19,7 +19,7 @@ const serverlessConfiguration: AWS = {
       BUCKET_NAME: 'products-csv-parser',
       QUEUE_URL: 'https://sqs.us-east-1.amazonaws.com/442312567108/CatalogItemsQueue'
     },
-    httpApi: { 
+    httpApi: {
       cors: true
     },
     iam: {
@@ -58,6 +58,24 @@ const serverlessConfiguration: AWS = {
       platform: 'node',
       concurrency: 10,
     },
+  },
+  resources: {
+    Resources: {
+      Unauthorized2: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        DeletionPolicy: 'Retain',
+        Properties: {
+          ResponseParameters: {
+            "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+            "gatewayresponse.header.Access-Control-Allow-Headers": "'*'"
+          },
+          ResponseType: "DEFAULT_4XX",
+          RestApiId: {
+            Ref: "ApiGatewayRestApi"
+          }
+        }
+      }
+    }
   }
 };
 
